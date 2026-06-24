@@ -1,0 +1,13 @@
+{
+  "name": "magic-patterns",
+  "description": "Use Magic Patterns (magicpatterns.com) from your coding agent: prototype ideas, generate UI inspiration, upload local UI, and integrate Magic Patterns designs into your codebase.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Magic Patterns",
+    "url": "https://magicpatterns.com"
+  },
+  "homepage": "https://magicpatterns.com",
+  "repository": "https://github.com/magicpatterns/magic-patterns-plugins",
+  "license": "MIT",
+  "keywords": ["ui", "design", "react", "tailwind", "mcp", "magic-patterns"]
+}

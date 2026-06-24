@@ -1,0 +1,23 @@
+{
+  "name": "magic-patterns",
+  "owner": {
+    "name": "Magic Patterns",
+    "url": "https://magicpatterns.com"
+  },
+  "description": "Magic Patterns plugin for Claude Code.",
+  "plugins": [
+    {
+      "name": "magic-patterns",
+      "source": "./claude-code/plugins/magic-patterns",
+      "description": "Use Magic Patterns from your coding agent: prototype, get inspiration, upload local UI, and integrate designs.",
+      "category": "design",
+      "tags": [
+        "ui",
+        "design",
+        "magic-patterns",
+        "react",
+        "tailwind"
+      ]
+    }
+  ]
+}

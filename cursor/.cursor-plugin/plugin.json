@@ -1,0 +1,9 @@
+{
+  "name": "magic-patterns",
+  "description": "Use Magic Patterns (magicpatterns.com) from Cursor: prototype ideas, generate UI inspiration, upload local UI, and integrate Magic Patterns designs into your codebase.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Magic Patterns",
+    "url": "https://magicpatterns.com"
+  }
+}
