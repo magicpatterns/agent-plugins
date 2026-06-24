@@ -1,6 +1,6 @@
 # Magic Patterns plugins
 
-Official [Magic Patterns](https://magicpatterns.com) plugins for **Claude Code**,
+Official [Magic Patterns](https://www.magicpatterns.com) plugins for **Claude Code**,
 **Cursor**, and **OpenAI Codex** — prototype ideas, generate UI inspiration, upload local
 UI, and integrate Magic Patterns designs straight from your coding agent. Each plugin
 bundles the Magic Patterns MCP server, so installing also wires up the connection.

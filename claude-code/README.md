@@ -1,6 +1,6 @@
 # Magic Patterns — Claude Code plugin
 
-Use [Magic Patterns](https://magicpatterns.com) from Claude Code: prototype ideas,
+Use [Magic Patterns](https://www.magicpatterns.com) from Claude Code: prototype ideas,
 generate UI inspiration, upload local UI, and integrate Magic Patterns designs into your
 codebase. Bundles the Magic Patterns MCP server so installing also wires up the
 connection.

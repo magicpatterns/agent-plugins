@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "author": {
     "name": "Magic Patterns",
-    "url": "https://magicpatterns.com"
+    "url": "https://www.magicpatterns.com"
   },
-  "homepage": "https://magicpatterns.com",
+  "homepage": "https://www.magicpatterns.com",
   "repository": "https://github.com/magicpatterns/magic-patterns-plugins",
   "license": "MIT",
   "keywords": ["ui", "design", "react", "tailwind", "mcp", "magic-patterns"]

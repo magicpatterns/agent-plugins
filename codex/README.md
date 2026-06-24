@@ -1,6 +1,6 @@
 # Magic Patterns — Codex plugin
 
-Use [Magic Patterns](https://magicpatterns.com) from OpenAI Codex: prototype ideas,
+Use [Magic Patterns](https://www.magicpatterns.com) from OpenAI Codex: prototype ideas,
 generate UI inspiration, upload local UI, and integrate Magic Patterns designs into your
 codebase. Bundles the Magic Patterns MCP server (`.mcp.json`).
 

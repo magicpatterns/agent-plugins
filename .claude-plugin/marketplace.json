@@ -2,7 +2,7 @@
   "name": "magic-patterns",
   "owner": {
     "name": "Magic Patterns",
-    "url": "https://magicpatterns.com"
+    "url": "https://www.magicpatterns.com"
   },
   "description": "Magic Patterns plugin for Claude Code.",
   "plugins": [
