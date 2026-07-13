@@ -8,9 +8,9 @@ Bundles the Magic Patterns MCP server (`mcp.json`).
 
 | Skill | What it does |
 | --- | --- |
-| `prototype` | Prototype an idea in Magic Patterns, seeded from your local UI, then iterate into a live design. |
-| `inspiration` | Generate four parallel UI concepts for a screen/component and return a link to compare them. |
-| `upload-to-magic-patterns` | Upload local UI into Magic Patterns and return the editor link. |
+| `upload-to-magic-patterns` | Port local UI with `recreate-as-react` and write it into a hosted design, then return the editor link. |
+| `prototype` | Prototype an idea in Magic Patterns, seeded from your local UI, then iterate into a live design and open it in the browser. |
+| `inspiration` | Generate four bold, meaningfully-different design directions and publish a shareable comparison link. |
 | `integrate-magic-patterns-design` | Adapt a Magic Patterns design into an existing codebase as production code. |
 
 ## Install
