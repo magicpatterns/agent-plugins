@@ -115,6 +115,8 @@ First determine how this component is styled, then trace every style down to a r
 
 **Preserve intent.** Keep responsive prefixes (`md:`, `lg:`), visibility/sizing (`hidden md:inline-flex`, `w-fit`, `whitespace-nowrap`), and hover/active/focus/disabled visual states.
 
+**Prioritize mobile responsiveness — build mobile-first.** The recreation must render and read well on small screens, not just desktop. Carry over every responsive prefix and breakpoint the source declares (`sm:`/`md:`/`lg:`/`xl:`), and where the source has no explicit mobile handling, add sensible responsive behavior yourself so nothing overflows at narrow widths: stack multi-column layouts vertically, let flex rows wrap, collapse or make navigation scrollable, use fluid widths (`w-full`, `max-w-*`, percentage/`min()`/`clamp()`) instead of fixed pixel widths, keep touch targets comfortably tappable, and allow horizontal scroll only where genuinely unavoidable (e.g. wide tables). Default to a phone-width viewport as the baseline and layer desktop enhancements on top with breakpoints.
+
 ### Step 3 — Strip runtime, keep the UI
 
 Make the prototype self-contained so it renders with no backend. This applies to **runtime logic only** — never to styling:
@@ -197,6 +199,7 @@ body {
 - [ ] Spacing, font sizes, weights, and line-heights match
 - [ ] Borders, radii, and shadows match (radius resolved to exact px/rem, per-corner and `rounded-full` preserved, `overflow-hidden` kept where the parent clips children)
 - [ ] Layout and responsive behavior preserved (flex/grid, breakpoints, intrinsic sizing)
+- [ ] Mobile-first: renders and reads well at phone widths — no overflow, columns stack, nav collapses/scrolls, fluid widths instead of fixed pixels, touch-friendly targets
 - [ ] Hover/active/focus/disabled visual states preserved
 - [ ] Fonts load via `@import url()` in `index.css` and apply (no serif fallback)
 - [ ] Runtime stripped: mock data instead of fetch/auth/env; nothing needs a backend
@@ -216,6 +219,7 @@ body {
 - Accent-filling a selected segment/tab/toggle when the library renders the active state as a neutral raised indicator (white + shadow, dark text).
 - Approximating border radius with `rounded-md`/`rounded-lg` instead of resolving the exact px value; dropping per-corner radii, `rounded-full`, or the `overflow-hidden` that clips a rounded parent.
 - Pasting production runtime code (fetch/auth/env) verbatim so it fails to compile or renders blank — strip and stub it.
+- Building desktop-only — dropping the source's responsive behavior or hardcoding fixed pixel widths so the recreation overflows or breaks on mobile. Build mobile-first and keep it usable at small viewport widths.
 
 ## Example
 

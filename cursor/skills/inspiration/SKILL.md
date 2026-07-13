@@ -146,6 +146,8 @@ Return the `url` from Step 3 to the user and tell them it renders the four conce
 
 **This published `url` is the ONLY thing you open in a browser.** Never open the local `baseline.html` — it is scaffolding for publishing, not for previewing.
 
+**End your response by asking the user to pick a direction** — something along the lines of: "Let me know which one you like the best and I can implement it into this codebase. Alternatively, let me know if you want me to brainstorm more variants or flesh one out further." The exact wording can vary, but keep the same intent: invite them to choose one to implement, or ask for more variants or a deeper pass on one.
+
 ### Step 6 — Clean up the temp folder
 
 Once you've streamed in the concepts (Step 4) and handed back the link (Step 5), **delete the temporary working directory** so nothing is left behind: `rm -rf "$TMP"` (this removes `baseline.html`). The hosted link is the deliverable; the baseline file was only scaffolding for the create call.
