@@ -24,7 +24,9 @@ Produce a single HTML document:
 
 ### Step 1 — Locate the source (use subagents to explore)
 
-You MUST delegate the codebase exploration to `explore` subagents via the Task tool — do not read/grep the files yourself. Launch them with the `composer-2.5-fast` model (fast, read-only), fanned out concurrently in a single batch, then do the HTML assembly yourself with what they return. Split the work, e.g.:
+**First, take stock of what's already in context — don't re-explore what you already have.** For each concern in the list below (target component source, imported SVGs/design-system rendering, theme tokens/colors, fonts, image assets), check whether the current conversation already holds the **concrete resolved values** that concern needs. Only count context as sufficient when it contains real values (verbatim `<svg>` markup, concrete hex, px/rem, font families/weights, real asset paths) — a vague mention or a filename alone is not enough; when in doubt, explore it. Skip the subagent for any concern already satisfied in context, and **fan out `explore` subagents only for the concerns that are genuinely missing.** If everything needed is already in context (e.g. the user pasted the full component plus its tokens/SVGs), skip exploration entirely and go straight to Step 2 assembly.
+
+For whatever you do need to explore, you MUST delegate the codebase exploration to `explore` subagents via the Task tool — do not read/grep the files yourself. Launch them with the `composer-2.5-fast` model (fast, read-only), fanned out concurrently in a single batch, then do the HTML assembly yourself with what they return. Split the work, e.g.:
 
 - One subagent finds the target component file(s) and lists its subcomponents / styled wrappers.
 - One subagent **follows the component's imports into design-system/workspace packages and `node_modules`** (monorepo sibling packages, `@scope/*` packages) and, for every imported UI symbol (icons, logos, illustrations, bespoke SVG components), opens its real source and returns the **exact `<svg>` markup / asset path** — not a description. For any third-party design-system primitive (segmented control, tabs, switch, select, etc.), also read the **library's component CSS/default rendering** and return the actual default/hover/selected part styles (track color, indicator background + shadow, label colors, per-`size` padding/height/radius).
@@ -159,6 +161,7 @@ Put font `@import url()` first (above other CSS). Apply the correct `font-family
 - Approximating border radius with `rounded-md`/`rounded-lg` instead of resolving the exact px value; dropping per-corner radii, `rounded-full`, or the `overflow-hidden` that clips a rounded parent.
 - Omitting hover/active/disabled states that the original clearly has.
 - Splitting into multiple files — the output must be a single self-contained `.html`.
+- Re-launching subagents to re-derive information already resolved in context instead of reusing it — or the inverse, trusting a vague mention/filename and skipping a concern that actually needs its values resolved.
 
 ## Example
 

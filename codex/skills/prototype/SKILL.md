@@ -77,7 +77,7 @@ After each meaningful change, return the `editorUrl` so the user can view and ke
 
 ### Step 6 — Open the editor in the browser
 
-**Always open the `editorUrl` for the user — don't just print it.** Prefer the **embedded Cursor browser**: call the `cursor-ide-browser` MCP `browser_navigate` tool with the `editorUrl` (omit `position` so it opens in the background without stealing focus). If that MCP tool is unavailable, open it in the user's **default browser** with the OS opener: run `open <editorUrl>` on macOS, `xdg-open <editorUrl>` on Linux, or `start <editorUrl>` on Windows. Only skip opening if the user explicitly asked you not to. Open it at the Step 3 checkpoint (the seeded starting point) and again after a `send_prompt` change lands.
+**Always open the `editorUrl` for the user — don't just print it.** Open it in the user's **default browser** with the OS opener: run `open <url>` on macOS, `xdg-open <url>` on Linux, or `start <url>` on Windows. Open it at the Step 3 checkpoint (the seeded starting point) and again after a `send_prompt` change lands. Only skip opening if the user explicitly asked you not to.
 
 ## Notes and limitations
 

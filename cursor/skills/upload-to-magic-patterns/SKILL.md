@@ -43,7 +43,7 @@ If you need to preserve the original scaffold as a separate version, call `creat
 
 Return the `editorUrl` to the user so they can keep iterating in Magic Patterns, and tell them they may need to log in. If `publish_artifact` reported compile errors, fix the offending files and publish again before returning the link.
 
-**Always open the `editorUrl` for the user — don't just print it.** Prefer the **embedded Cursor browser**: call the `cursor-ide-browser` MCP `browser_navigate` tool with the `editorUrl` (omit `position` so it opens in the background without stealing focus). If that MCP tool is unavailable, open it in the user's **default browser** with the OS opener: run `open <editorUrl>` on macOS, `xdg-open <editorUrl>` on Linux, or `start <editorUrl>` on Windows. Only skip opening if the user explicitly asked you not to.
+**Always open the `editorUrl` for the user — don't just print it.** Prefer the **embedded Cursor browser**: call the `cursor-ide-browser` MCP `browser_navigate` tool with the link (omit `position` so it opens in the background without stealing focus). If that MCP tool is unavailable, open it in the user's **default browser** with the OS opener: run `open <url>` on macOS, `xdg-open <url>` on Linux, or `start <url>` on Windows. Only skip opening if the user explicitly asked you not to.
 
 Then delete the temp working directory (`rm -rf "$TMP"`) so nothing is left in the user's project.
 

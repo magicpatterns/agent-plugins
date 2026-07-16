@@ -42,7 +42,7 @@ Concepts are **not** written to disk — each subagent generates its concept HTM
 
 First create the temporary working directory (`mktemp -d`, referred to as `$TMP`). Then follow the `recreate-as-raw-html` skill end-to-end to produce **one faithful baseline** of the current UI, saved as `$TMP/<Target>-inspiration/baseline.html` — reusing its fidelity rules and its parallel `explore` subagent fan-out to locate the source, follow imports, resolve tokens/fonts, and copy SVGs verbatim.
 
-**Optimize for speed: parallelize the exploration.** You MUST delegate the codebase exploration to `explore` subagents via the Task tool — do not read/grep the files yourself. Launch them with the `composer-2.5-fast` model (fast, read-only), **fanned out concurrently in a single batch (one message, multiple Task calls)**, then do the HTML assembly yourself with what they return. Splitting the work across many parallel subagents is the primary speed lever, so favor more concurrent subagents over one doing everything sequentially. Split the work, e.g.:
+**Optimize for speed: parallelize the exploration.** Per `recreate-as-raw-html` Step 1, first check what's already in context and only fan out subagents for the concerns that are actually missing (skip any concern whose concrete resolved values are already present). For whatever you do explore, you MUST delegate the codebase exploration to `explore` subagents via the Task tool — do not read/grep the files yourself. Launch them with the `composer-2.5-fast` model (fast, read-only), **fanned out concurrently in a single batch (one message, multiple Task calls)**, then do the HTML assembly yourself with what they return. Splitting the work across many parallel subagents is the primary speed lever, so favor more concurrent subagents over one doing everything sequentially. Split the work, e.g.:
 
 - One subagent finds the target component file(s) and lists its subcomponents / styled wrappers.
 - One subagent **follows the component's imports into design-system/workspace packages and `node_modules`** (monorepo sibling packages, `@scope/*` packages) and, for every imported UI symbol (icons, logos, illustrations, bespoke SVG components), opens its real source and returns the **exact `<svg>` markup / asset path** — not a description. For any third-party design-system primitive (segmented control, tabs, switch, select, etc.), also read the **library's component CSS/default rendering** and return the actual default/hover/selected part styles (track color, indicator background + shadow, label colors, per-`size` padding/height/radius).
@@ -91,6 +91,8 @@ Normalize the remote to a plain `https://github.com/<owner>/<repo>` URL (strip a
 
 The tool returns `{ id, url, variants: [{ id, name }] }`. **Record the `id` (the inspiration id), the `url`, and each concept's `variantId`** — you hand each subagent its own `variantId` in the next step. If the tool reports an authentication error, the MCP server isn't connected/signed in — tell the user how to connect it and stop.
 
+**Immediately open the `url` before generating the concepts (Step 4).** The page shows a faded, shimmering baseline in each concept tile and polls for updates, so the user watches every concept stream in live as its subagent finishes, instead of staring at a blank wait. Prefer the **embedded Cursor browser**: call the `cursor-ide-browser` MCP `browser_navigate` tool with the link (omit `position` so it opens in the background without stealing focus). If that MCP tool is unavailable, open it in the user's **default browser** with the OS opener: run `open <url>` on macOS, `xdg-open <url>` on Linux, or `start <url>` on Windows. **This `url` is the ONLY thing you open in a browser** — never open the local `baseline.html`, which is scaffolding for publishing, not for previewing. Only skip opening if the user explicitly asked you not to.
+
 ### Step 4 — Generate and stream in the four concepts (parallel subagents)
 
 **Delegate the concept generation to subagents (via the Task tool), fanned out concurrently in a single batch**, one subagent per concept. Each subagent assembles its concept HTML from the brief you hand it and **calls `inspiration_add_variant` directly to push the HTML into the document** — it does NOT write a file and does NOT return the HTML to you. This keeps every concept's HTML out of your context.
@@ -138,13 +140,11 @@ The tool returns `{ id, url, variants: [{ id, name }] }`. **Record the `id` (the
 
 After the subagents return, each concept should be live on the page (the document flips to ready once all four are in). If a subagent failed or its concept drifted (didn't reuse the baseline tokens/copy/SVGs, didn't express its distinct direction, or its signature motion doesn't auto-play), regenerate that concept and re-push it with `inspiration_add_variant` (targeting the same `variantId`).
 
-### Step 5 — Hand back the shareable link (and open it)
+### Step 5 — Hand back the shareable link
 
 Return the `url` from Step 3 to the user and tell them it renders the four concepts side by side and can be shared. Note the detected type. If publishing hit an authentication error, tell the user how to connect the MCP server.
 
-**Always open the published `url` for the user when done** — do not just print it. Prefer the **embedded Cursor browser**: call the `cursor-ide-browser` MCP `browser_navigate` tool with the `url` (omit `position` so it opens in the background without stealing focus). If that MCP tool is unavailable, open it in the user's **default browser** with the OS opener: run `open <url>` on macOS, `xdg-open <url>` on Linux, or `start <url>` on Windows. Only skip opening if the user explicitly asked you not to.
-
-**This published `url` is the ONLY thing you open in a browser.** Never open the local `baseline.html` — it is scaffolding for publishing, not for previewing.
+**If the tab isn't already open, open it now** — using the same opener described in Step 3. Normally it's already open from Step 3, where the concepts fill in live as each subagent finishes, so you only need to open it here if opening was skipped there (e.g. the browser tool was unavailable then). Never open it twice.
 
 **End your response by asking the user to pick a direction** — something along the lines of: "Let me know which one you like the best and I can implement it into this codebase. Alternatively, let me know if you want me to brainstorm more variants or flesh one out further." The exact wording can vary, but keep the same intent: invite them to choose one to implement, or ask for more variants or a deeper pass on one.
 
@@ -164,7 +164,7 @@ Then **detect the intent** and take one of two paths:
 
 **Update a subset (or all)** — the user wants specific concepts revised ("update Concept C", "make B and D denser", "lean harder into the imagery"). For **only the targeted concepts**, fan out one `generalPurpose` + `composer-2.5-fast` subagent per concept. Give each subagent that concept's **previous `html`** plus the requested change, and instruct it to **revise from the previous version** (keep everything the user didn't ask to change), then call `inspiration_update_variant(inspirationId, variantId, html)` to push the revised HTML directly. **Leave the untouched concepts alone** — do not regenerate concepts the user didn't mention. The same craft/fidelity rules apply: honor the baseline tokens, render `sharedCopy` verbatim, copy SVGs 1:1, auto-play signature motion via CSS.
 
-After either path, **re-open the same `url`** for the user (same as Step 5) — the document updates in place.
+After either path, **open the same `url`** for the user (using the opener described in Step 3) — the document updates in place, and any tile being regenerated shows the faded baseline + shimmer until its revised concept streams in.
 
 ## Fidelity & guardrails
 

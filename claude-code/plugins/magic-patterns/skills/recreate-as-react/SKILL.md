@@ -62,7 +62,7 @@ When another skill runs this as its porting step (`upload-to-magic-patterns`, `p
 
 ### Step 1 — Locate the source (use subagents to explore)
 
-You MUST delegate the codebase exploration to `explore` subagents via the Task tool — do not read/grep the files yourself. Launch them with the `composer-2.5-fast` model (fast, read-only), fanned out concurrently in a single batch, then do the React assembly yourself with what they return. Split the work, e.g.:
+You MUST delegate the codebase exploration to `explore` subagents via the Task tool — do not read/grep the files yourself. Launch them with the `haiku` model (fast, read-only), fanned out concurrently in a single batch, then do the React assembly yourself with what they return. Split the work, e.g.:
 
 - One subagent finds the target component file(s) and lists its subcomponents / styled wrappers.
 - One subagent **follows the component's imports into design-system/workspace packages and `node_modules`** (monorepo sibling packages, `@scope/*` packages) and, for every imported UI symbol (icons, logos, illustrations, bespoke SVG components), opens its real source and returns the **exact `<svg>` markup / asset path** — not a description. For any third-party design-system primitive (segmented control, tabs, switch, select, etc.), also read the **library's component CSS/default rendering** and return the actual default/hover/selected part styles (track color, indicator background + shadow, label colors, per-`size` padding/height/radius).
@@ -140,7 +140,7 @@ Apply the correct `font-family`, weights, sizes, and line-heights on the root/bo
 
 ### Step 5 — Plan the files, then parallelize the writes with subagents
 
-You (the main model) do the **thinking**: from the concrete values resolved in Step 2, produce a high-level spec of the output — the file list, which component lives in which file, the props/mock-data shapes, and the resolved tokens (colors, spacing, radii, fonts, verbatim SVG markup) each file needs. Then **delegate the actual file writing to `composer-2.5-fast` subagents (via the Task tool), fanned out concurrently in a single batch** so independent files are written in parallel.
+You (the main model) do the **thinking**: from the concrete values resolved in Step 2, produce a high-level spec of the output — the file list, which component lives in which file, the props/mock-data shapes, and the resolved tokens (colors, spacing, radii, fonts, verbatim SVG markup) each file needs. Then **delegate the actual file writing to `haiku` subagents (via the Task tool), fanned out concurrently in a single batch** so independent files are written in parallel.
 
 - Give each subagent a self-contained brief: the exact file path to write, the full resolved values it needs (concrete hex, px/rem, font families, verbatim `<svg>` markup, mock-data shape), and the Output-contract rules (named exports, one component per file, Tailwind arbitrary values, no `any`, `index.css` import order). Subagents must not re-derive styling or re-read the source — hand them the resolved values so they only assemble.
 - Group by independence: e.g. one subagent per sub-component file, one for `index.css` + `tailwind.config.js`, one for `mockData.ts`. Keep files that must agree on a shared interface (e.g. a component and its props type) in the same brief.
@@ -228,7 +228,7 @@ User: "Take the `<PricingCard>` from my codebase and give me a React version."
 1. Delegate exploration: subagents find `PricingCard` and subcomponents, follow imports for icons/logo/tokens, resolve the theme palette and fonts, and return concrete values + verbatim SVG.
 2. Identify the styling system; resolve every color/spacing/font token to a concrete value (arbitrary Tailwind values, `tailwind.config.js` tokens, or inline styles). Inline the icons/logo SVG 1:1.
 3. Strip any runtime (fetch/auth) → mock data; add the app's font `@import` to `index.css`.
-4. Plan the file list + resolved values, then fan out `composer-2.5-fast` subagents to write `App.tsx`, `index.tsx`, `index.css`, `tailwind.config.js`, `PricingCard.tsx` (named export) in parallel from that spec. Verify the seams compile and hand back `./PricingCard/`.
+4. Plan the file list + resolved values, then fan out `haiku` subagents to write `App.tsx`, `index.tsx`, `index.css`, `tailwind.config.js`, `PricingCard.tsx` (named export) in parallel from that spec. Verify the seams compile and hand back `./PricingCard/`.
 
 ## Related
 
