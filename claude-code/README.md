@@ -17,7 +17,7 @@ connection.
 ## Install
 
 ```
-/plugin marketplace add magicpatterns/magic-patterns-plugins
+/plugin marketplace add magicpatterns/agent-plugins
 /plugin install magic-patterns@magic-patterns
 ```
 

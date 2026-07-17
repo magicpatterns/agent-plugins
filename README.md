@@ -39,7 +39,7 @@ All three ship the same four skills and the same MCP server
 **Claude Code**
 
 ```
-/plugin marketplace add magicpatterns/magic-patterns-plugins
+/plugin marketplace add magicpatterns/agent-plugins
 /plugin install magic-patterns@magic-patterns
 ```
 
