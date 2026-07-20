@@ -1,6 +1,6 @@
 ---
 name: inspiration
-description: Explore several bold, meaningfully-different UI design directions for a screen or component in Magic Patterns (magicpatterns.com). First recreates the current UI as a faithful baseline, then creates a shareable magicpatterns.com/inspiration/<id> document and streams in four self-contained HTML concepts tuned to the kind of exploration wanted (entrypoint/discoverability, information architecture/navigation, or visual display). The hosted comparison link is the deliverable. Use when the user wants design inspiration, alternative directions, layout options, variations, or a "show me a few approaches" exploration before committing to an implementation.
+description: Explore several distinct UI design directions for a screen or component in Magic Patterns (magicpatterns.com). First recreates the current UI as a faithful baseline, then creates a shareable magicpatterns.com/inspiration/<id> document and streams in four self-contained HTML concepts tuned to the kind of exploration wanted (entrypoint/discoverability, information architecture/navigation, or visual display). The hosted comparison link is the deliverable. Use when the user wants design inspiration, alternative directions, layout options, variations, or a "show me a few approaches" exploration before committing to an implementation.
 ---
 
 # Inspiration
@@ -38,11 +38,29 @@ Concepts are **not** written to disk — each subagent generates its concept HTM
 
 ## Workflow
 
+### Step 0 — Harvest context already resolved in the thread
+
+Before reading files or launching subagents, harvest everything the current agent already knows about the target UI from the **entire available thread context**. This includes work done outside this skill: previous user requests, manual exploration, earlier subagent results, pasted code, open/referenced files, and prior implementation work. Context does not need to have been produced by `inspiration` or stored in a special artifact to be reusable.
+
+Build a concise in-memory **resolved UI context** covering:
+
+- target component files and component hierarchy
+- real copy/content
+- styling system and resolved colors/tokens
+- typography and font sources
+- spacing, radii, shadows, and density
+- design-system primitives and their rendered states
+- verbatim SVGs/icons and image asset paths
+
+Mark each concern **complete**, **partial**, or **missing**. A concern is complete only when the thread contains the concrete values needed by the baseline (for example exact hex values, px/rem values, font families/weights, verbatim SVG markup, and real asset paths), ideally with source-file provenance. Reuse complete concerns directly without re-reading their files merely to verify them. For partial concerns, preserve the known values and investigate only the unresolved delta. Re-explore a complete concern only when there is evidence it became stale, such as relevant files being edited later in the thread.
+
+Subagents do not inherit the parent agent's thread context. Include the relevant resolved UI context, exact known values, and citations in every subagent brief so they search only for missing information instead of rediscovering the styling system.
+
 ### Step 1 — Build the baseline (compose `recreate-as-raw-html`)
 
-First create the temporary working directory (`mktemp -d`, referred to as `$TMP`). Then follow the `recreate-as-raw-html` skill end-to-end to produce **one faithful baseline** of the current UI, saved as `$TMP/<Target>-inspiration/baseline.html` — reusing its fidelity rules and its parallel `explore` subagent fan-out to locate the source, follow imports, resolve tokens/fonts, and copy SVGs verbatim.
+First create the temporary working directory (`mktemp -d`, referred to as `$TMP`). Use the resolved UI context from Step 0 as the context inventory for `recreate-as-raw-html` Step 1 — do not repeat that skill's harvest. Run only the missing exploration described below, then always apply `recreate-as-raw-html` Steps 2–4 (styling fidelity, fonts, and assembly) to produce **one faithful baseline** at `$TMP/<Target>-inspiration/baseline.html`.
 
-**Optimize for speed: parallelize the exploration.** Per `recreate-as-raw-html` Step 1, first check what's already in context and only fan out subagents for the concerns that are actually missing (skip any concern whose concrete resolved values are already present). For whatever you do explore, you MUST delegate the codebase exploration to `explore` subagents via the Task tool — do not read/grep the files yourself. Launch them with the `composer-2.5-fast` model (fast, read-only), **fanned out concurrently in a single batch (one message, multiple Task calls)**, then do the HTML assembly yourself with what they return. Splitting the work across many parallel subagents is the primary speed lever, so favor more concurrent subagents over one doing everything sequentially. Split the work, e.g.:
+**Optimize for speed: reuse first, then parallelize only the missing exploration.** Start from the resolved UI context in Step 0. If it already contains everything needed, skip only the exploration and proceed directly through `recreate-as-raw-html` Steps 2–4; the fast path never skips its fidelity or assembly requirements. For partial or missing concerns, you MUST delegate the remaining codebase exploration to `explore` subagents via the Task tool — do not read/grep the files yourself. Give each subagent the relevant known context and ask only for the unresolved delta. Launch them with the `composer-2.5-fast` model (fast, read-only), **fanned out concurrently in a single batch (one message, multiple Task calls)**, then do the HTML assembly yourself with what they return. Split only the remaining work, e.g.:
 
 - One subagent finds the target component file(s) and lists its subcomponents / styled wrappers.
 - One subagent **follows the component's imports into design-system/workspace packages and `node_modules`** (monorepo sibling packages, `@scope/*` packages) and, for every imported UI symbol (icons, logos, illustrations, bespoke SVG components), opens its real source and returns the **exact `<svg>` markup / asset path** — not a description. For any third-party design-system primitive (segmented control, tabs, switch, select, etc.), also read the **library's component CSS/default rendering** and return the actual default/hover/selected part styles (track color, indicator background + shadow, label colors, per-`size` padding/height/radius).
